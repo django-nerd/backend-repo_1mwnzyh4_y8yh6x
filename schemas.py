@@ -12,7 +12,8 @@ Model name is converted to lowercase for the collection name:
 """
 
 from pydantic import BaseModel, Field
-from typing import Optional
+from typing import Optional, Literal
+from datetime import datetime
 
 # Example schemas (replace with your own):
 
@@ -38,11 +39,21 @@ class Product(BaseModel):
     category: str = Field(..., description="Product category")
     in_stock: bool = Field(True, description="Whether product is in stock")
 
-# Add your own schemas here:
-# --------------------------------------------------
+# Chat schemas for Mohini (18+ chatbot)
 
-# Note: The Flames database viewer will automatically:
-# 1. Read these schemas from GET /schema endpoint
-# 2. Use them for document validation when creating/editing
-# 3. Handle all database operations (CRUD) directly
-# 4. You don't need to create any database endpoints!
+class Conversation(BaseModel):
+    """
+    Conversations metadata
+    Collection name: "conversation"
+    """
+    conversation_id: str = Field(..., description="Unique ID for the conversation")
+    started_at: Optional[datetime] = Field(default=None, description="When the conversation started")
+
+class ChatMessage(BaseModel):
+    """
+    Individual chat messages
+    Collection name: "chatmessage"
+    """
+    conversation_id: str = Field(..., description="Conversation this message belongs to")
+    role: Literal["user", "assistant"] = Field(..., description="Who sent the message")
+    content: str = Field(..., description="Message text")
